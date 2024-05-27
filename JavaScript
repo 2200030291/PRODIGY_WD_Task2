@@ -1,0 +1,63 @@
+let startTime;
+let updatedTime;
+let difference;
+let tInterval;
+let running = false;
+let lapCounter = 0;
+let savedTime = 0;
+
+const timeDisplay = document.getElementById('time');
+const startPauseButton = document.getElementById('startPause');
+const resetButton = document.getElementById('reset');
+const lapButton = document.getElementById('lap');
+const lapsList = document.getElementById('laps');
+
+function startTimer() {
+    if (!running) {
+        startTime = new Date().getTime() - savedTime;
+        tInterval = setInterval(updateTime, 1);
+        startPauseButton.innerHTML = 'Pause';
+        running = true;
+    } else {
+        clearInterval(tInterval);
+        savedTime = new Date().getTime() - startTime;
+        startPauseButton.innerHTML = 'Start';
+        running = false;
+    }
+}
+
+function resetTimer() {
+    clearInterval(tInterval);
+    savedTime = 0;
+    difference = 0;
+    running = false;
+    timeDisplay.innerHTML = '00:00:00';
+    startPauseButton.innerHTML = 'Start';
+    lapsList.innerHTML = '';
+    lapCounter = 0;
+}
+
+function lapTimer() {
+    if (running) {
+        const lapTime = document.createElement('li');
+        lapTime.innerHTML = timeDisplay.innerHTML;
+        lapsList.appendChild(lapTime);
+        lapCounter++;
+    }
+}
+
+function updateTime() {
+    updatedTime = new Date().getTime() - startTime;
+    difference = new Date(updatedTime);
+    let hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    let minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+    let seconds = Math.floor((difference % (1000 * 60)) / 1000);
+    hours = (hours < 10) ? '0' + hours : hours;
+    minutes = (minutes < 10) ? '0' + minutes : minutes;
+    seconds = (seconds < 10) ? '0' + seconds : seconds;
+    timeDisplay.innerHTML = hours + ':' + minutes + ':' + seconds;
+}
+
+startPauseButton.addEventListener('click', startTimer);
+resetButton.addEventListener('click', resetTimer);
+lapButton.addEventListener('click', lapTimer);
